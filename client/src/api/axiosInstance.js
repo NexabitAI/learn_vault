@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
+  baseURL: "https://learnifyhub.org/api"
 });
 
 axiosInstance.interceptors.request.use(

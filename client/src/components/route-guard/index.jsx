@@ -32,3 +32,4 @@ function RouteGuard({ authenticated, user, element }) {
 }
 
 export default RouteGuard;
+

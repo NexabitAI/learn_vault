@@ -20,7 +20,7 @@ const MONGO_URI = process.env.MONGO_URI;
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: "https://learnifyhub.org",
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -29,7 +29,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 //database connection
 mongoose
-  .connect(MONGO_URI)
+  .connect("mongodb://lms_user:StrongLMS%40Pass789@127.0.0.1:27017/LMS?authSource=LMS")
   .then(() => console.log("mongodb is connected"))
   .catch((e) => console.log(e));
 

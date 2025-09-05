@@ -22,19 +22,16 @@ function App() {
   const { auth } = useContext(AuthContext);
 
   return (
-    
     <Routes>
-      <Route
-    path=""
-    element={<StudentViewCommonLayoutNew/>}>
-      <Route path="/" element={<StudentHomePageNew/>}/>
-      {/* <Route path="/out/home" element={<StudentHomePageNew/>}/> */}
-      <Route path="/out/courses" element={<StudentViewCoursesPageNew/>}/>
-      <Route path="/out/course/details/:id" element={<StudentViewCourseDetailsPageNew/>}/>
+      {/* ------------------ New Student Layout ------------------ */}
+      <Route path="/out" element={<StudentViewCommonLayoutNew />}>
+        <Route index element={<StudentHomePageNew />} />
+        <Route path="home" element={<StudentHomePageNew />} />
+        <Route path="courses" element={<StudentViewCoursesPageNew />} />
+        <Route path="course/details/:id" element={<StudentViewCourseDetailsPageNew />} />
+      </Route>
 
-
-
-    </Route>
+      {/* ------------------ Auth ------------------ */}
       <Route
         path="/auth"
         element={
@@ -45,6 +42,8 @@ function App() {
           />
         }
       />
+
+      {/* ------------------ Instructor ------------------ */}
       <Route
         path="/instructor"
         element={
@@ -75,6 +74,8 @@ function App() {
           />
         }
       />
+
+      {/* ------------------ Old Student Layout ------------------ */}
       <Route
         path="/"
         element={
@@ -85,20 +86,16 @@ function App() {
           />
         }
       >
-        <Route path="" element={<StudentHomePage />} />
+        <Route index element={<StudentHomePage />} />
         <Route path="home" element={<StudentHomePage />} />
         <Route path="courses" element={<StudentViewCoursesPage />} />
-        <Route
-          path="course/details/:id"
-          element={<StudentViewCourseDetailsPage />}
-        />
+        <Route path="course/details/:id" element={<StudentViewCourseDetailsPage />} />
         <Route path="payment-return" element={<PaypalPaymentReturnPage />} />
         <Route path="student-courses" element={<StudentCoursesPage />} />
-        <Route
-          path="course-progress/:id"
-          element={<StudentViewCourseProgressPage />}
-        />
+        <Route path="course-progress/:id" element={<StudentViewCourseProgressPage />} />
       </Route>
+
+      {/* ------------------ Catch All ------------------ */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

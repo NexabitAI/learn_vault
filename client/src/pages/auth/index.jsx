@@ -61,7 +61,7 @@ function AuthPage() {
           className="flex items-center justify-center">
           <GraduationCap className="h-8 w-8 mr-4" />
           <span className="font-extrabold text-xl">
-            LEARN VALUT
+            LEARNIFY HUB
           </span>
         </Link>
       </header>
