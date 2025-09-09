@@ -56,3 +56,22 @@ header {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
+
+/* ---------- Course card hover override (neutral, non-green) ---------- */
+:root {
+  /* light theme card hover */
+  --card-hover: 210 10% 96%; /* soft neutral */
+}
+html[data-theme="soft-dark"] {
+  /* dark theme card hover */
+  --card-hover: 180 8% 14%; /* subtle charcoal */
+}
+
+.course-card {
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.course-card:hover {
+  background-color: hsl(var(--card-hover));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .15);
+  border-color: hsl(var(--border));
+}
