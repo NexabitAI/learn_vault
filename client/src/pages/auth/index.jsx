@@ -1,6 +1,5 @@
-// /src/pages/auth/index.jsx
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import StudentHomePageNew from "@/pages/student/home/indexNew";
 import CommonForm from "@/components/common-form";
@@ -19,6 +18,7 @@ import { X } from "lucide-react";
 
 function AuthPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState("signin");
 
   const {
@@ -30,44 +30,39 @@ function AuthPage() {
     handleLoginUser,
   } = useContext(AuthContext);
 
-  // Prevent background scrolling while modal is open
+  // restore redirect path
+  const from = location.state?.from || "/";
+
+  // lock scroll while modal is open
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => (document.body.style.overflow = prev);
   }, []);
 
-  function checkIfSignInFormIsValid() {
-    return (
-      signInFormData &&
-      signInFormData.userEmail !== "" &&
-      signInFormData.password !== ""
-    );
+  function validSignIn() {
+    return !!(signInFormData?.userEmail && signInFormData?.password);
   }
-
-  function checkIfSignUpFormIsValid() {
-    return (
-      signUpFormData &&
-      signUpFormData.userName !== "" &&
-      signUpFormData.userEmail !== "" &&
-      signUpFormData.password !== ""
+  function validSignUp() {
+    return !!(
+      signUpFormData?.userName &&
+      signUpFormData?.userEmail &&
+      signUpFormData?.password
     );
   }
 
   return (
     <div className="relative min-h-screen">
-      {/* Background: your public home page, non-interactive */}
       <div aria-hidden className="pointer-events-none">
         <StudentHomePageNew />
       </div>
 
-      {/* Dim + blur overlay */}
-      <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-md" />
+      {/* blur + dim */}
+      <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-xl" />
 
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <Card className="relative w-full max-w-lg border-white/20 shadow-2xl bg-card/80 backdrop-blur-xl">
-          {/* Close to landing */}
+        <Card className="relative w-full max-w-lg">
           <button
             onClick={() => navigate("/")}
             className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-foreground/10 hover:bg-foreground/20 transition"
@@ -91,37 +86,37 @@ function AuthPage() {
 
             <TabsContent value="signin">
               <CardHeader className="pt-4">
-                <CardTitle>Sign in to your account</CardTitle>
-                <CardDescription>
-                  Enter your email and password to access your account.
-                </CardDescription>
+                <CardTitle>Welcome back</CardTitle>
+                <CardDescription>Access your account.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <CommonForm
                   formControls={signInFormControls}
-                  buttonText={"Sign In"}
+                  buttonText="Sign In"
                   formData={signInFormData}
                   setFormData={setSignInFormData}
-                  isButtonDisabled={!checkIfSignInFormIsValid()}
-                  handleSubmit={handleLoginUser}
+                  isButtonDisabled={!validSignIn()}
+                  handleSubmit={async (e) => {
+                    await handleLoginUser(e);
+                    // On success, AuthProvider will update state; just navigate back
+                    setTimeout(() => navigate(from), 50);
+                  }}
                 />
               </CardContent>
             </TabsContent>
 
             <TabsContent value="signup">
               <CardHeader className="pt-4">
-                <CardTitle>Create a new account</CardTitle>
-                <CardDescription>
-                  Enter your details to get started.
-                </CardDescription>
+                <CardTitle>Create your account</CardTitle>
+                <CardDescription>It only takes a minute.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <CommonForm
                   formControls={signUpFormControls}
-                  buttonText={"Sign Up"}
+                  buttonText="Sign Up"
                   formData={signUpFormData}
                   setFormData={setSignUpFormData}
-                  isButtonDisabled={!checkIfSignUpFormIsValid()}
+                  isButtonDisabled={!validSignUp()}
                   handleSubmit={handleRegisterUser}
                 />
               </CardContent>

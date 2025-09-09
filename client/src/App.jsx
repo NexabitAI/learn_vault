@@ -1,16 +1,17 @@
 import { Route, Routes } from "react-router-dom";
 import { useContext } from "react";
 
-// Auth
-import AuthPage from "./pages/auth";
 import { AuthContext } from "./context/auth-context";
 import RouteGuard from "./components/route-guard";
 
-// Public (marketing/catalog)
+// Public catalog
 import StudentViewCommonLayoutNew from "./components/student-view/common-layoutnew";
 import StudentHomePageNew from "./pages/student/home/indexNew";
 import StudentViewCoursesPageNew from "./pages/student/courses/indexNew";
 import StudentViewCourseDetailsPageNew from "./pages/student/course-details/indexNew";
+
+// Auth modal route
+import AuthPage from "./pages/auth";
 
 // Student protected
 import StudentCoursesPage from "./pages/student/student-courses";
@@ -29,7 +30,7 @@ function App() {
 
   return (
     <Routes>
-      {/* -------- PUBLIC: Home / Catalog -------- */}
+      {/* PUBLIC */}
       <Route path="/" element={<StudentViewCommonLayoutNew />}>
         <Route index element={<StudentHomePageNew />} />
         <Route path="home" element={<StudentHomePageNew />} />
@@ -37,10 +38,10 @@ function App() {
         <Route path="course/details/:id" element={<StudentViewCourseDetailsPageNew />} />
       </Route>
 
-      {/* -------- AUTH page (also opened via modal from header) -------- */}
+      {/* AUTH (modal over background) */}
       <Route path="/auth" element={<AuthPage />} />
 
-      {/* -------- STUDENT: Protected -------- */}
+      {/* STUDENT PROTECTED */}
       <Route
         path="/student-courses"
         element={
@@ -62,10 +63,10 @@ function App() {
         }
       />
 
-      {/* Payment return can be public; it will finalize and then redirect */}
+      {/* Payment return can stay public */}
       <Route path="/payment-return" element={<PaypalPaymentReturnPage />} />
 
-      {/* -------- INSTRUCTOR: Protected -------- */}
+      {/* INSTRUCTOR PROTECTED */}
       <Route
         path="/instructor"
         element={
@@ -97,7 +98,6 @@ function App() {
         }
       />
 
-      {/* Catch all */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
