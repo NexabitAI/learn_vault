@@ -92,7 +92,7 @@ html[data-theme="soft-dark"] {
   --radius: 0.875rem;
 }
 
-/* High Contrast overlay (works with either theme) */
+/* High Contrast overlay */
 html[data-contrast="high"] {
   --foreground: 0 0% 0%;
   --card-foreground: 0 0% 0%;
@@ -119,6 +119,31 @@ html[data-contrast="high"] {
     font-family: "Inter", ui-sans-serif, system-ui, -apple-system,
                  Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
                  "Segoe UI Emoji", "Segoe UI Symbol";
+  }
+
+  /* Kill any legacy #root width constraints just in case */
+  #root { max-width: none !important; }
+}
+
+/* ---------------------------------------------------------
+   Layout override: make Tailwind's `.container` fluid
+   (so pages using `container mx-auto` span full width)
+   --------------------------------------------------------- */
+@layer components {
+  .container {
+    width: 100%;
+    max-width: 100% !important;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;   /* keep some breathing room */
+    padding-right: 1rem;
+  }
+}
+
+/* Optional: neutralize common max-width helpers used in your pages */
+@layer utilities {
+  .max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl {
+    max-width: 100% !important;
   }
 }
 
