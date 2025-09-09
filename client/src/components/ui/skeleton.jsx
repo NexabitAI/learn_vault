@@ -1,14 +1,21 @@
-import { cn } from "@/lib/utils"
+// src/components/ui/skeleton.jsx
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-function Skeleton({
-  className,
-  ...props
-}) {
+function Skeleton({ className, ...props }) {
   return (
-    (<div
-      className={cn("animate-pulse rounded-md bg-primary/10", className)}
-      {...props} />)
+    <div
+      aria-hidden="true"
+      className={cn(
+        "animate-pulse",
+        "rounded-[var(--radius)]",
+        "bg-[hsl(var(--secondary))]",
+        "border border-[hsl(var(--border))]",
+        className
+      )}
+      {...props}
+    />
   );
 }
 
-export { Skeleton }
+export { Skeleton };

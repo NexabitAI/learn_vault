@@ -1,49 +1,76 @@
+// src/components/media-progress-bar/index.jsx
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 function MediaProgressbar({ isMediaUploading, progress }) {
   const [showProgress, setShowProgress] = useState(false);
   const [animatedProgress, setAnimatedProgress] = useState(0);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     if (isMediaUploading) {
       setShowProgress(true);
       setAnimatedProgress(progress);
     } else {
-      const timer = setTimeout(() => {
-        setShowProgress(false);
-      }, 1000);
-
+      const timer = setTimeout(() => setShowProgress(false), 1000);
       return () => clearTimeout(timer);
     }
   }, [isMediaUploading, progress]);
 
   if (!showProgress) return null;
 
+  const widthNow = Math.max(0, Math.min(100, animatedProgress));
+
   return (
-    <div className="w-full bg-gray-200 rounded-full h-3 mt-5 mb-5 relative overflow-hidden">
+    <div
+      className="
+        w-full mt-5 mb-5 relative overflow-hidden
+        h-3 rounded-full
+        bg-[hsl(var(--secondary))]
+        border border-[hsl(var(--border))]
+      "
+      role="progressbar"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={Math.round(widthNow)}
+      title={`Uploading… ${Math.round(widthNow)}%`}
+    >
       <motion.div
-        className="bg-blue-600 h-3 rounded-full"
+        className="
+          h-3 rounded-full
+          bg-[hsl(var(--primary))]
+        "
         initial={{ width: 0 }}
         animate={{
-          width: `${animatedProgress}%`,
-          transition: { duration: 0.5, ease: "easeInOut" },
+          width: `${widthNow}%`,
+          transition: {
+            duration: reduceMotion ? 0 : 0.45,
+            ease: "easeInOut",
+          },
         }}
       >
+        {/* Subtle shimmer when at/near completion and still finalizing on backend */}
         {progress >= 100 && isMediaUploading && (
           <motion.div
-            className="absolute top-0 left-0 right-0 bottom-0 bg-blue-400 opacity-50"
+            className="
+              absolute inset-0
+              bg-[hsl(var(--ring))]
+              opacity-30
+            "
             animate={{
               x: ["0%", "100%", "0%"],
             }}
             transition={{
-              duration: 2,
-              repeat: Infinity,
+              duration: reduceMotion ? 0 : 1.6,
+              repeat: reduceMotion ? 0 : Infinity,
               ease: "linear",
             }}
           />
         )}
       </motion.div>
+
+      {/* Screen-reader friendly text */}
+      <span className="sr-only">Uploading media… {Math.round(widthNow)} percent</span>
     </div>
   );
 }

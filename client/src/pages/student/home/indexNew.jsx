@@ -1,137 +1,140 @@
-import { courseCategories } from "@/config";
-import banner from "../../../../public/banner-img.jpg";
-import { Button } from "@/components/ui/button";
+// src/pages/student/home/indexNew.jsx
 import { useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+
+import { courseCategories } from "@/config";
 import { StudentContext } from "@/context/student-context";
+import { AuthContext } from "@/context/auth-context";
 import {
   checkCoursePurchaseInfoService,
   fetchStudentViewCourseListService,
 } from "@/services";
-import { AuthContext } from "@/context/auth-context";
-import { useNavigate } from "react-router-dom";
+
+// If the image is placed in /public, prefer using the absolute path:
+const bannerSrc = "/banner-img.jpg";
 
 function StudentHomePageNew() {
-  const {
-    studentViewCoursesList,
-    setStudentViewCoursesList,
-  } = useContext(StudentContext);
+  const { studentViewCoursesList, setStudentViewCoursesList } =
+    useContext(StudentContext);
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  function handleNavigateToCoursesPage(getCurrentId) {
-    console.log(getCurrentId);
+  function handleNavigateToCoursesPage(categoryId) {
     sessionStorage.removeItem("filters");
-    const currentFilter = {
-      category: [getCurrentId],
-    };
-
-    sessionStorage.setItem(
-      "filters",
-      JSON.stringify(currentFilter)
-    );
-
+    const currentFilter = { category: [categoryId] };
+    sessionStorage.setItem("filters", JSON.stringify(currentFilter));
     navigate("/out/courses");
   }
 
   async function fetchAllStudentViewCourses() {
-    const response =
-      await fetchStudentViewCourseListService();
-    if (response?.success)
-      setStudentViewCoursesList(response?.data);
+    const response = await fetchStudentViewCourseListService();
+    if (response?.success) setStudentViewCoursesList(response?.data || []);
   }
 
-  async function handleCourseNavigate(getCurrentCourseId) {
-    const response = await checkCoursePurchaseInfoService(
-      getCurrentCourseId,
-      auth?.user?._id
-    );
-
+  async function handleCourseNavigate(courseId) {
+    // Public "out" surface: if not signed in, always show details
+    if (!auth?.authenticate) {
+      navigate(`/out/course/details/${courseId}`);
+      return;
+    }
+    const response = await checkCoursePurchaseInfoService(courseId, auth?.user?._id);
     if (response?.success) {
       if (response?.data) {
-        navigate(`/out/course-progress/${getCurrentCourseId}`);
+        navigate(`/out/course-progress/${courseId}`);
       } else {
-        navigate(`/out/course/details/${getCurrentCourseId}`);
+        navigate(`/out/course/details/${courseId}`);
       }
     }
   }
 
   useEffect(() => {
     fetchAllStudentViewCourses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
-      <section className="flex flex-col lg:flex-row items-center justify-between py-8 px-4 lg:px-8">
-        <div className="lg:w-1/2 lg:pr-12">
-          <h1 className="text-4xl font-bold mb-4">
-            Learning thet gets you
+    <div className="min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
+      {/* Hero */}
+      <section className="container mx-auto py-8 px-4 lg:px-8 grid lg:grid-cols-2 gap-8 items-center">
+        <div className="lg:pr-8">
+          <h1 className="text-4xl font-extrabold mb-4 tracking-tight">
+            Learning that gets you
           </h1>
-          <p className="text-xl">
-            Skills for your present and your future. Get
-            Started with US
+          <p className="text-xl text-[hsl(var(--muted-foreground))]">
+            Skills for your present and your future. Get started with us.
           </p>
         </div>
-        <div className="lg:w-full mb-8 lg:mb-0">
+        <div className="w-full">
           <img
-            src={banner}
+            src={bannerSrc}
             width={600}
             height={400}
-            className="w-full h-auto rounded-lg shadow-lg"
+            alt="Learning banner"
+            className="w-full h-auto rounded-lg border border-[hsl(var(--border))] shadow"
+            loading="eager"
           />
         </div>
       </section>
-      <section className="py-8 px-4 lg:px-8 bg-gray-100">
-        <h2 className="text-2xl font-bold mb-6">
-          Course Categories
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {courseCategories.map((categoryItem) => (
-            <Button
-              className="justify-start"
-              variant="outline"
-              key={categoryItem.id}
-              onClick={() =>
-                handleNavigateToCoursesPage(categoryItem.id)
-              }>
-              {categoryItem.label}
-            </Button>
-          ))}
+
+      {/* Categories */}
+      <section className="py-8 bg-[hsl(var(--muted))]">
+        <div className="container mx-auto px-4 lg:px-8">
+          <h2 className="text-2xl font-bold mb-6">Course Categories</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {courseCategories.map((category) => (
+              <Button
+                key={category.id}
+                className="justify-start"
+                variant="outline"
+                onClick={() => handleNavigateToCoursesPage(category.id)}
+              >
+                {category.label}
+              </Button>
+            ))}
+          </div>
         </div>
       </section>
-      <section className="py-12 px-4 lg:px-8">
-        <h2 className="text-2xl font-bold mb-6">
-          Featured Courses
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {studentViewCoursesList &&
-          studentViewCoursesList.length > 0 ? (
-            studentViewCoursesList.map((courseItem) => (
-              <div
-                onClick={() =>
-                  handleCourseNavigate(courseItem?._id)
-                }
-                className="border rounded-lg overflow-hidden shadow cursor-pointer">
-                <img
-                  src={courseItem?.image}
-                  width={300}
-                  height={150}
-                  className="w-full h-40 object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="font-bold mb-2">
-                    {courseItem?.title}
-                  </h3>
-                  <p className="text-sm text-gray-700 mb-2">
-                    {courseItem?.instructorName}
-                  </p>
-                  <p className="font-bold text-[16px]">
-                    ${courseItem?.pricing}
-                  </p>
-                </div>
-              </div>
-            ))
+
+      {/* Featured */}
+      <section className="py-12">
+        <div className="container mx-auto px-4 lg:px-8">
+          <h2 className="text-2xl font-bold mb-6">Featured Courses</h2>
+
+          {studentViewCoursesList && studentViewCoursesList.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {studentViewCoursesList.map((course) => (
+                <Card
+                  key={course?._id}
+                  className="cursor-pointer hover:bg-[hsl(var(--accent))] transition-colors"
+                  onClick={() => handleCourseNavigate(course?._id)}
+                >
+                  <CardContent className="p-0">
+                    <div className="w-full h-40 overflow-hidden rounded-t-lg border-b border-[hsl(var(--border))]">
+                      <img
+                        src={course?.image}
+                        alt={course?.title || "Course image"}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <CardTitle className="text-base mb-2 line-clamp-2">
+                        {course?.title}
+                      </CardTitle>
+                      <p className="text-sm text-[hsl(var(--muted-foreground))] mb-2">
+                        {course?.instructorName}
+                      </p>
+                      <p className="font-bold text-[16px]">${Number(course?.pricing || 0)}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           ) : (
-            <h1>No Courses Found</h1>
+            <h3 className="text-lg text-[hsl(var(--muted-foreground))]">No courses found.</h3>
           )}
         </div>
       </section>

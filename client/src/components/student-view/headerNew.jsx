@@ -1,55 +1,54 @@
-import { GraduationCap, TvMinimalPlay } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+// src/components/student-view/headerNew.jsx
+import React from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { GraduationCap } from "lucide-react";
 import { Button } from "../ui/button";
-import { useContext } from "react";
-import { AuthContext } from "@/context/auth-context";
 
 function StudentViewCommonHeaderNew() {
   const navigate = useNavigate();
-  const { resetCredentials } = useContext(AuthContext);
+  const location = useLocation();
 
-  function handleLogout() {
-    navigate("/auth")
-  }
+  const isOnCourses = location.pathname.startsWith("/out/courses");
+
+  const handleSignIn = () => {
+    navigate("/auth");
+  };
 
   return (
-    <header className="flex items-center justify-between p-4 border-b relative">
-      <div className="flex items-center space-x-4">
+    <nav
+      aria-label="Public navigation"
+      className="flex items-center justify-between gap-3 py-3 text-[hsl(var(--foreground))]"
+    >
+      {/* Left: Brand + primary nav */}
+      <div className="flex items-center gap-4">
         <Link
-          to="/"
-          className="flex items-center hover:text-black">
-          <GraduationCap className="h-8 w-8 mr-4 " />
-          <span className="font-extrabold md:text-xl text-[14px]">
+          to="/out"
+          className="group flex items-center hover:no-underline text-[hsl(var(--foreground))]"
+          aria-label="Go to Home"
+        >
+          <GraduationCap className="h-7 w-7 mr-3 opacity-90 group-hover:opacity-100 transition-opacity" />
+          <span className="font-extrabold md:text-xl text-sm tracking-tight">
             LEARNIFY HUB!
           </span>
         </Link>
-        <div className="flex items-center space-x-1">
-          <Button
-            variant="ghost"
-            onClick={() => {
-              location.pathname.includes("/courses")
-                ? null
-                : navigate("/out/courses");
-            }}
-            className="text-[14px] md:text-[16px] font-medium">
-            Explore Courses
-          </Button>
-        </div>
+
+        <Button
+          variant="ghost"
+          disabled={isOnCourses}
+          onClick={() => {
+            if (!isOnCourses) navigate("/out/courses");
+          }}
+          className="text-sm md:text-base font-medium"
+        >
+          Explore Courses
+        </Button>
       </div>
-      <div className="flex items-center space-x-4">
-        <div className="flex gap-4 items-center">
-          <div
-            onClick={() => navigate("/student-courses")}
-            className="flex cursor-pointer items-center gap-3">
-            {/* <span className="font-extrabold md:text-xl text-[14px]">
-              My Courses
-            </span> */}
-            {/* <TvMinimalPlay className="w-8 h-8 cursor-pointer" /> */}
-          </div>
-          <Button onClick={handleLogout}>Sign In</Button>
-        </div>
+
+      {/* Right: Auth */}
+      <div className="flex items-center gap-4">
+        <Button onClick={handleSignIn}>Sign In</Button>
       </div>
-    </header>
+    </nav>
   );
 }
 

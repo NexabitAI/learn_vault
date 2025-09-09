@@ -1,35 +1,33 @@
+// src/components/route-guard/index.jsx
+import React, { Fragment } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { Fragment } from "react";
 
 function RouteGuard({ authenticated, user, element }) {
   const location = useLocation();
+  const path = location.pathname || "/";
 
-  if (
-    !authenticated &&
-    !location.pathname.includes("/auth")
-  ) {
-    return <Navigate to="/auth" />;
+  const isAuthPath = path.startsWith("/auth");
+  const isInstructorPath = path.startsWith("/instructor");
+  const isInstructor = user?.role === "instructor";
+
+  // Not logged in → force Auth, preserve where they were headed
+  if (!authenticated && !isAuthPath) {
+    return <Navigate to="/auth" replace state={{ from: location }} />;
   }
 
-  if (
-    authenticated &&
-    user?.role !== "instructor" &&
-    (location.pathname.includes("instructor") ||
-      location.pathname.includes("/auth"))
-  ) {
-    return <Navigate to="/home" />;
+  // Logged in as non-instructor → block /instructor and /auth
+  if (authenticated && !isInstructor && (isInstructorPath || isAuthPath)) {
+    const to = "/home";
+    if (path !== to) return <Navigate to={to} replace />;
   }
 
-  if (
-    authenticated &&
-    user.role === "instructor" &&
-    !location.pathname.includes("instructor")
-  ) {
-    return <Navigate to="/instructor" />;
+  // Logged in as instructor → keep them under /instructor
+  if (authenticated && isInstructor && !isInstructorPath) {
+    const to = "/instructor";
+    if (path !== to) return <Navigate to={to} replace />;
   }
 
   return <Fragment>{element}</Fragment>;
 }
 
 export default RouteGuard;
-

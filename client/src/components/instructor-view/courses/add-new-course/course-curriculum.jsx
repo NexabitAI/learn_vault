@@ -1,3 +1,4 @@
+// src/pages/instructor/parts/CourseCurriculum.jsx (adjust path as needed)
 import MediaProgressbar from "@/components/media-progress-bar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -144,7 +145,6 @@ function CourseCurriculum() {
         setMediaUploadProgressPercentage
       );
 
-      console.log(response, "bulk");
       if (response?.success) {
         let cpyCourseCurriculumFormdata =
           areAllCourseCurriculumFormDataObjectsEmpty(courseCurriculumFormData)
@@ -187,10 +187,13 @@ function CourseCurriculum() {
   }
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row justify-between">
-        <CardTitle>Create Course Curriculum</CardTitle>
-        <div>
+    <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-[var(--shadow)]">
+      <CardHeader className="flex flex-row items-center justify-between gap-3 border-b border-[hsl(var(--border))]">
+        <CardTitle className="text-lg font-semibold text-[hsl(var(--foreground))]">
+          Create Course Curriculum
+        </CardTitle>
+
+        <div className="flex items-center gap-2">
           <Input
             type="file"
             ref={bulkUploadInputRef}
@@ -201,42 +204,66 @@ function CourseCurriculum() {
             onChange={handleMediaBulkUpload}
           />
           <Button
-            as="label"
-            htmlFor="bulk-media-upload"
+            asChild
             variant="outline"
             className="cursor-pointer"
             onClick={handleOpenBulkUploadDialog}
           >
-            <Upload className="w-4 h-5 mr-2" />
-            Bulk Upload
+            <label htmlFor="bulk-media-upload" className="inline-flex items-center">
+              <Upload className="w-4 h-4 mr-2" />
+              Bulk Upload
+            </label>
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
-        <Button
-          disabled={!isCourseCurriculumFormDataValid() || mediaUploadProgress}
-          onClick={handleNewLecture}
-        >
-          Add Lecture
-        </Button>
-        {mediaUploadProgress ? (
-          <MediaProgressbar
-            isMediaUploading={mediaUploadProgress}
-            progress={mediaUploadProgressPercentage}
-          />
-        ) : null}
-        <div className="mt-4 space-y-4">
+
+      <CardContent className="pt-6">
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            disabled={!isCourseCurriculumFormDataValid() || mediaUploadProgress}
+            onClick={handleNewLecture}
+            className="min-w-[140px]"
+          >
+            Add Lecture
+          </Button>
+
+          {mediaUploadProgress ? (
+            <div className="flex-1 min-w-[240px]">
+              <MediaProgressbar
+                isMediaUploading={mediaUploadProgress}
+                progress={mediaUploadProgressPercentage}
+              />
+            </div>
+          ) : null}
+        </div>
+
+        <div className="mt-5 space-y-4">
           {courseCurriculumFormData.map((curriculumItem, index) => (
-            <div className="border p-5 rounded-md">
-              <div className="flex gap-5 items-center">
-                <h3 className="font-semibold">Lecture {index + 1}</h3>
+            <div
+              key={curriculumItem?.public_id || `lecture-${index}`}
+              className="
+                border border-[hsl(var(--border))]
+                bg-[hsl(var(--card))]
+                rounded-[var(--radius)]
+                p-5
+                shadow-sm
+                hover:shadow-md
+                transition-shadow
+              "
+            >
+              <div className="flex flex-wrap items-center gap-4">
+                <h3 className="font-semibold text-[hsl(var(--foreground))] min-w-[110px]">
+                  Lecture {index + 1}
+                </h3>
+
                 <Input
                   name={`title-${index + 1}`}
                   placeholder="Enter lecture title"
-                  className="max-w-96"
+                  className="w-full sm:max-w-96"
                   onChange={(event) => handleCourseTitleChange(event, index)}
                   value={courseCurriculumFormData[index]?.title}
                 />
+
                 <div className="flex items-center space-x-2">
                   <Switch
                     onCheckedChange={(value) =>
@@ -245,36 +272,40 @@ function CourseCurriculum() {
                     checked={courseCurriculumFormData[index]?.freePreview}
                     id={`freePreview-${index + 1}`}
                   />
-                  <Label htmlFor={`freePreview-${index + 1}`}>
+                  <Label
+                    htmlFor={`freePreview-${index + 1}`}
+                    className="text-[hsl(var(--foreground))]"
+                  >
                     Free Preview
                   </Label>
                 </div>
               </div>
+
               <div className="mt-6">
                 {courseCurriculumFormData[index]?.videoUrl ? (
-                  <div className="flex gap-3">
+                  <div className="flex flex-wrap items-start gap-3">
                     <VideoPlayer
                       url={courseCurriculumFormData[index]?.videoUrl}
                       width="450px"
                       height="200px"
                     />
-                    <Button onClick={() => handleReplaceVideo(index)}>
-                      Replace Video
-                    </Button>
-                    <Button
-                      onClick={() => handleDeleteLecture(index)}
-                      className="bg-red-900"
-                    >
-                      Delete Lecture
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button onClick={() => handleReplaceVideo(index)}>
+                        Replace Video
+                      </Button>
+                      <Button
+                        onClick={() => handleDeleteLecture(index)}
+                        variant="destructive"
+                      >
+                        Delete Lecture
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   <Input
                     type="file"
                     accept="video/*"
-                    onChange={(event) =>
-                      handleSingleLectureUpload(event, index)
-                    }
+                    onChange={(event) => handleSingleLectureUpload(event, index)}
                     className="mb-4"
                   />
                 )}

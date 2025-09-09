@@ -1,42 +1,90 @@
+/* src/App.css — LMS app-level styles mapped to theme variables */
+
 #root {
-  max-width: 1280px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: clamp(16px, 2vw + 8px, 32px);
+  text-align: initial; /* don't force center; let components control layout */
 }
 
+/* Brandable logo with subtle motion + theme-aware glow */
 .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  height: 6rem;
+  padding: 1.25rem;
+  will-change: filter, transform;
+  transition: filter 300ms ease, transform 200ms ease;
+  filter: drop-shadow(0 0 0 rgba(0,0,0,0));
 }
 
+.logo:hover {
+  /* use ring color for glow in light, brighter in dark */
+  filter: drop-shadow(0 0 2em color-mix(in oklab, var(--ring) 60%, transparent));
+  transform: translateY(-1px);
+}
+
+/* Optional: react logo variant still supported */
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em color-mix(in oklab, var(--accent) 65%, transparent));
+}
+
+/* Gentle spin for any second logo (kept from template but themed) */
 @keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg) }
+  to { transform: rotate(360deg) }
 }
 
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+    animation: logo-spin 20s linear infinite;
   }
 }
 
-.card {
-  padding: 2em;
+/* Remove old .card override to avoid clashes with lms-theme.css */
+/* If you need a local card, use .app-card instead. */
+.app-card {
+  background: var(--card, white);
+  color: hsl(var(--card-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius, 14px);
+  box-shadow: var(--shadow, 0 8px 24px rgba(2,6,23,0.08));
+  padding: 1.25rem;
 }
 
+/* Docs/help text */
 .read-the-docs {
-  color: #888;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Utility sections for spacing/layout in demo pages */
+.app-section {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: clamp(12px, 1.8vw + 6px, 20px);
+  margin-block: clamp(10px, 1.5vw + 6px, 18px);
+}
+
+.app-grid {
+  display: grid;
+  gap: clamp(10px, 2vw, 20px);
+  grid-template-columns: repeat(12, 1fr);
+}
+
+.app-grid > * {
+  grid-column: span 12;
+}
+
+@media (min-width: 768px) {
+  .app-grid-6-6 > * { grid-column: span 6 }
+  .app-grid-4-4-4 > * { grid-column: span 4 }
+}
+
+/* High-contrast tweaks layer on top of theme */
+html[data-contrast="high"] .logo:hover {
+  filter: drop-shadow(0 0 2em black);
+}
+
+html[data-contrast="high"] .read-the-docs {
+  color: #000;
+  text-decoration: underline;
 }
