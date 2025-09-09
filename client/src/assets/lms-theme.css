@@ -1,3 +1,13 @@
+/* src/assets/lms-theme.css */
+
+/* Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================
+   GLASS + DARK-GREEN TOKENS
+   ========================= */
 :root {
   color-scheme: dark;
 
@@ -30,8 +40,12 @@
   --ring: 162 78% 45%;
 
   --radius: 0.875rem;
+
+  /* neutral card hover (non-green) for dark */
+  --card-hover: 180 8% 14%;
 }
 
+/* High contrast overlay (optional) */
 html[data-contrast="high"] {
   --foreground: 0 0% 100%;
   --muted-foreground: 0 0% 90%;
@@ -41,6 +55,17 @@ html[data-contrast="high"] {
   --primary-foreground: 160 10% 9%;
 }
 
+/* =========================
+   Base mapping
+   ========================= */
+@layer base {
+  * { @apply border-border; }
+  html, body { @apply bg-background text-foreground; }
+}
+
+/* =========================
+   Glass helpers
+   ========================= */
 .glass {
   background-color: hsl(var(--card));
   backdrop-filter: saturate(140%) blur(16px);
@@ -57,21 +82,34 @@ header {
   -webkit-backdrop-filter: blur(14px);
 }
 
-/* ---------- Course card hover override (neutral, non-green) ---------- */
-:root {
-  /* light theme card hover */
-  --card-hover: 210 10% 96%; /* soft neutral */
+/* =========================
+   Course-card hover (no JSX edits)
+   Targets any clickable rounded card (used by course lists)
+   ========================= */
+.cursor-pointer.rounded-lg,
+.cursor-pointer.rounded-xl {
+  transition:
+    background-color .2s ease,
+    box-shadow .2s ease,
+    border-color .2s ease,
+    transform .15s ease;
 }
-html[data-theme="soft-dark"] {
-  /* dark theme card hover */
-  --card-hover: 180 8% 14%; /* subtle charcoal */
+.cursor-pointer.rounded-lg:hover,
+.cursor-pointer.rounded-xl:hover {
+  background-color: hsl(var(--card-hover));
+  box-shadow: 0 10px 30px rgba(0,0,0,.24);
+  border-color: hsl(var(--border));
+  transform: translateY(-1px);
 }
 
-.course-card {
-  transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-.course-card:hover {
-  background-color: hsl(var(--card-hover));
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .15);
-  border-color: hsl(var(--border));
+/* =========================
+   Scrollbars (subtle)
+   ========================= */
+* { scrollbar-width: thin; scrollbar-color: rgba(120,130,125,.6) transparent; }
+body::-webkit-scrollbar { width: 6px; height: 6px; }
+body::-webkit-scrollbar-track { background: transparent; }
+body::-webkit-scrollbar-thumb {
+  background: rgba(120,130,125,.6);
+  border-radius: 9999px;
+  outline: 1px solid transparent;
 }

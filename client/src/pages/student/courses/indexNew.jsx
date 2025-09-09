@@ -145,7 +145,7 @@ function StudentViewCoursesPageNew() {
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {studentViewCoursesList && studentViewCoursesList.length > 0 ? (
               studentViewCoursesList.map((courseItem) => (
-                <Card onClick={() => handleCourseNavigate(courseItem?._id)} className="cursor-pointer course-card">
+                <Card onClick={() => handleCourseNavigate(courseItem?._id)} className="cursor-pointer">
                   <CardContent className="flex gap-4 p-4">
                     <div className="w-48 h-32 flex-shrink-0">
                       <img src={courseItem?.image} className="w-full h-full object-cover rounded-md" />

@@ -207,7 +207,7 @@ function StudentViewCoursesPage() {
                 <Card
                   key={course?._id}
                   onClick={() => handleCourseNavigate(course?._id)}
-                  className="cursor-pointer course-card hover:bg-[hsl(var(--accent))] transition-colors"
+                  className="cursor-pointer hover:bg-[hsl(var(--accent))] transition-colors"
                 >
                   <CardContent className="flex gap-4 p-4">
                     <div className="w-48 h-32 flex-shrink-0 overflow-hidden rounded-md border border-[hsl(var(--border))]">
