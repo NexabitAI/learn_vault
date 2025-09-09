@@ -10,7 +10,7 @@ import StudentProvider from "./context/student-context/index.jsx";
 
 import { ToastContainer } from "react-toastify";
 import "./index.css";
-import "./src/assets/lms-theme.css";              // ← global theme tokens
+import "./assets/lms-theme.css";              // ← global theme tokens
 import { ThemeProvider } from "./theme/ThemeProvider.jsx"; // ← wrapper you added earlier
 
 createRoot(document.getElementById("root")).render(
