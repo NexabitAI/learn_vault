@@ -1,6 +1,8 @@
-// src/pages/auth/index.jsx
-import { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+// /src/pages/auth/index.jsx
+import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import StudentHomePageNew from "@/pages/student/home/indexNew";
 import CommonForm from "@/components/common-form";
 import {
   Card,
@@ -10,12 +12,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { signInFormControls, signUpFormControls } from "@/config";
 import { AuthContext } from "@/context/auth-context";
-import { GraduationCap } from "lucide-react";
+import { X } from "lucide-react";
 
 function AuthPage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("signin");
+
   const {
     signInFormData,
     setSignInFormData,
@@ -25,99 +30,104 @@ function AuthPage() {
     handleLoginUser,
   } = useContext(AuthContext);
 
-  const checkIfSignInFormIsValid = () =>
-    Boolean(signInFormData?.userEmail && signInFormData?.password);
+  // Prevent background scrolling while modal is open
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => (document.body.style.overflow = prev);
+  }, []);
 
-  const checkIfSignUpFormIsValid = () =>
-    Boolean(
-      signUpFormData?.userName &&
-        signUpFormData?.userEmail &&
-        signUpFormData?.password
+  function checkIfSignInFormIsValid() {
+    return (
+      signInFormData &&
+      signInFormData.userEmail !== "" &&
+      signInFormData.password !== ""
     );
+  }
+
+  function checkIfSignUpFormIsValid() {
+    return (
+      signUpFormData &&
+      signUpFormData.userName !== "" &&
+      signUpFormData.userEmail !== "" &&
+      signUpFormData.password !== ""
+    );
+  }
 
   return (
-    <div
-      className="
-        min-h-screen flex flex-col
-        bg-[hsl(var(--background))] text-[hsl(var(--foreground))]
-      "
-    >
-      {/* Header */}
-      <header className="h-14 border-b border-[hsl(var(--border))]">
-        <div className="container h-full flex items-center">
-          <Link
-            to="/"
-            className="flex items-center gap-3 hover:no-underline text-[hsl(var(--foreground))]"
-            aria-label="Go to home"
-          >
-            <GraduationCap className="h-6 w-6 opacity-90" />
-            <span className="font-extrabold text-lg tracking-tight">
-              LEARNIFY HUB
-            </span>
-          </Link>
-        </div>
-      </header>
+    <div className="relative min-h-screen">
+      {/* Background: your public home page, non-interactive */}
+      <div aria-hidden className="pointer-events-none">
+        <StudentHomePageNew />
+      </div>
 
-      {/* Content */}
-      <div className="flex-1 flex items-center justify-center">
-        <div className="w-full max-w-md px-4">
+      {/* Dim + blur overlay */}
+      <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-md" />
+
+      {/* Modal */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <Card className="relative w-full max-w-lg border-white/20 shadow-2xl bg-card/80 backdrop-blur-xl">
+          {/* Close to landing */}
+          <button
+            onClick={() => navigate("/")}
+            className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-foreground/10 hover:bg-foreground/20 transition"
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" />
+          </button>
+
           <Tabs
             value={activeTab}
+            defaultValue="signin"
             onValueChange={setActiveTab}
             className="w-full"
           >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin" aria-controls="signin-panel">
-                Sign In
-              </TabsTrigger>
-              <TabsTrigger value="signup" aria-controls="signup-panel">
-                Sign Up
-              </TabsTrigger>
-            </TabsList>
+            <div className="px-6 pt-6">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="signin">Sign In</TabsTrigger>
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              </TabsList>
+            </div>
 
-            <TabsContent value="signin" id="signin-panel">
-              <Card className="space-y-4">
-                <CardHeader className="border-b border-[hsl(var(--border))]">
-                  <CardTitle>Sign in to your account</CardTitle>
-                  <CardDescription>
-                    Enter your email and password to access your account.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <CommonForm
-                    formControls={signInFormControls}
-                    buttonText="Sign In"
-                    formData={signInFormData}
-                    setFormData={setSignInFormData}
-                    isButtonDisabled={!checkIfSignInFormIsValid()}
-                    handleSubmit={handleLoginUser}
-                  />
-                </CardContent>
-              </Card>
+            <TabsContent value="signin">
+              <CardHeader className="pt-4">
+                <CardTitle>Sign in to your account</CardTitle>
+                <CardDescription>
+                  Enter your email and password to access your account.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <CommonForm
+                  formControls={signInFormControls}
+                  buttonText={"Sign In"}
+                  formData={signInFormData}
+                  setFormData={setSignInFormData}
+                  isButtonDisabled={!checkIfSignInFormIsValid()}
+                  handleSubmit={handleLoginUser}
+                />
+              </CardContent>
             </TabsContent>
 
-            <TabsContent value="signup" id="signup-panel">
-              <Card className="space-y-4">
-                <CardHeader className="border-b border-[hsl(var(--border))]">
-                  <CardTitle>Create a new account</CardTitle>
-                  <CardDescription>
-                    Enter your details to get started.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <CommonForm
-                    formControls={signUpFormControls}
-                    buttonText="Sign Up"
-                    formData={signUpFormData}
-                    setFormData={setSignUpFormData}
-                    isButtonDisabled={!checkIfSignUpFormIsValid()}
-                    handleSubmit={handleRegisterUser}
-                  />
-                </CardContent>
-              </Card>
+            <TabsContent value="signup">
+              <CardHeader className="pt-4">
+                <CardTitle>Create a new account</CardTitle>
+                <CardDescription>
+                  Enter your details to get started.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <CommonForm
+                  formControls={signUpFormControls}
+                  buttonText={"Sign Up"}
+                  formData={signUpFormData}
+                  setFormData={setSignUpFormData}
+                  isButtonDisabled={!checkIfSignUpFormIsValid()}
+                  handleSubmit={handleRegisterUser}
+                />
+              </CardContent>
             </TabsContent>
           </Tabs>
-        </div>
+        </Card>
       </div>
     </div>
   );
