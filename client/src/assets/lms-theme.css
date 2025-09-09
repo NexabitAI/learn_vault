@@ -1,51 +1,37 @@
-/* =========================================================
-   GLASS EMERALD THEME TOKENS (default)
-   Works with shadcn (hsl(var(--token))) + glass via alpha
-   ========================================================= */
-
 :root {
   color-scheme: dark;
 
-  /* Base/foreground */
-  --background: 160 14% 9%;          /* deep pine */
+  --background: 160 14% 9%;
   --foreground: 158 28% 92%;
 
-  /* Surfaces (glass, semi-transparent) */
   --card: 160 18% 14% / 0.55;
   --card-foreground: 158 28% 92%;
 
   --popover: 160 18% 14% / 0.55;
   --popover-foreground: 158 28% 92%;
 
-  /* Brand */
-  --primary: 162 78% 45%;            /* emerald accent */
+  --primary: 162 78% 45%;
   --primary-foreground: 160 10% 9%;
 
-  /* Secondary surface chips */
   --secondary: 160 14% 13% / 0.45;
   --secondary-foreground: 158 28% 92%;
 
-  /* Muted text & surfaces */
   --muted: 160 14% 13% / 0.35;
   --muted-foreground: 160 10% 65%;
 
   --accent: 172 88% 46%;
   --accent-foreground: 160 10% 9%;
 
-  /* States */
   --destructive: 0 74% 46%;
   --destructive-foreground: 0 0% 98%;
 
-  /* Lines / Rings */
   --border: 160 10% 28% / .5;
   --input: 160 10% 28% / .5;
   --ring: 162 78% 45%;
 
-  /* Radius */
   --radius: 0.875rem;
 }
 
-/* Optional high-contrast overlay */
 html[data-contrast="high"] {
   --foreground: 0 0% 100%;
   --muted-foreground: 0 0% 90%;
@@ -55,7 +41,6 @@ html[data-contrast="high"] {
   --primary-foreground: 160 10% 9%;
 }
 
-/* Glass helpers (if you want to opt-in anywhere) */
 .glass {
   background-color: hsl(var(--card));
   backdrop-filter: saturate(140%) blur(16px);
@@ -66,7 +51,6 @@ html[data-contrast="high"] {
     inset 0 1px 0 rgba(255,255,255,.04);
 }
 
-/* Headers sticky glass baseline */
 header {
   background-color: hsl(var(--card));
   backdrop-filter: blur(14px);

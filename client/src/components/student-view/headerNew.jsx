@@ -10,7 +10,7 @@ function StudentViewCommonHeaderNew() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70">
-      <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
+      <div className="w-full px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link to="/" className="flex items-center hover:opacity-90">
             <GraduationCap className="h-7 w-7 mr-3 text-emerald-400" />
@@ -31,10 +31,7 @@ function StudentViewCommonHeaderNew() {
         <div className="flex items-center gap-3">
           {auth?.authenticate ? (
             <>
-              <Button
-                variant="ghost"
-                onClick={() => navigate("/student-courses")}
-              >
+              <Button variant="ghost" onClick={() => navigate("/student-courses")}>
                 My Courses
               </Button>
               <Button

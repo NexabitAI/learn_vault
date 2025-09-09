@@ -14,15 +14,13 @@
 
   html, body, #root {
     height: 100%;
+    width: 100%;
   }
 
-  html {
-    @apply antialiased;
-  }
+  html { @apply antialiased; }
 
   body {
     font-family: var(--font-sans);
-    /* Glass emerald ambient gradient behind the app */
     background:
       radial-gradient(1200px 800px at 10% 0%, rgba(47, 94, 83, .35), transparent 60%),
       radial-gradient(900px 700px at 90% 10%, rgba(17, 93, 77, .30), transparent 55%),
@@ -31,15 +29,20 @@
     min-height: 100%;
   }
 
-  * {
-    @apply border-border;
-  }
+  * { @apply border-border; }
 
-  /* Selection */
   ::selection {
     background: hsl(var(--primary) / .25);
     color: hsl(var(--primary-foreground));
   }
+}
+
+/* --- kill any leftovers from old App.css --- */
+#root { max-width: none; margin: 0; padding: 0; }
+
+/* Force Tailwind .container to span full width */
+@layer utilities {
+  .container { max-width: 100% !important; }
 }
 
 /* Subtle, theme-aware scrollbars */
