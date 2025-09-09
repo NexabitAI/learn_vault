@@ -14,7 +14,7 @@ import {
 } from "@/services";
 
 // If the image is placed in /public, prefer using the absolute path:
-const bannerSrc = "/banner-img.jpg";
+const bannerSrc = "/banner-img.png";
 
 function StudentHomePage() {
   const { studentViewCoursesList, setStudentViewCoursesList } =
