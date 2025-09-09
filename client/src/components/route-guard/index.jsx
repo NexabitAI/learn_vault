@@ -1,29 +1,33 @@
-import { Navigate, useLocation, Fragment } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { Fragment } from "react";
+
+const DASHBOARD_ROLES = new Set(["instructor", "admin"]);
 
 function RouteGuard({ authenticated, user, element }) {
   const location = useLocation();
+  const role = (user?.role || "").toString().toLowerCase();
+  const onAuthPage = location.pathname.startsWith("/auth");
+  const onInstructor = location.pathname.startsWith("/instructor");
 
-  const PROTECTED_PREFIXES = ["/student-courses", "/course-progress", "/instructor"];
-  const isProtected = PROTECTED_PREFIXES.some((p) =>
-    location.pathname.startsWith(p)
-  );
-
-  if (isProtected && !authenticated) {
-    return (
-      <Navigate
-        to="/auth"
-        replace
-        state={{ from: location.pathname + location.search }}
-      />
-    );
+  // Not logged in => force to /auth (student public pages live under /out and aren't wrapped by this guard)
+  if (!authenticated && !onAuthPage) {
+    return <Navigate to="/auth" replace />;
   }
 
-  if (
-    location.pathname.startsWith("/instructor") &&
-    authenticated &&
-    user?.role !== "instructor"
-  ) {
-    return <Navigate to="/home" replace />;
+  // Logged in and role is dashboard-eligible (instructor/admin)
+  if (authenticated && DASHBOARD_ROLES.has(role)) {
+    // If they’re on /auth or any non-instructor route wrapped by this guard, send them to dashboard
+    if (onAuthPage || !onInstructor) {
+      return <Navigate to="/instructor" replace />;
+    }
+  }
+
+  // Logged in but NOT dashboard-eligible (student, etc.)
+  if (authenticated && !DASHBOARD_ROLES.has(role)) {
+    // Block access to instructor or lingering /auth
+    if (onInstructor || onAuthPage) {
+      return <Navigate to="/home" replace />;
+    }
   }
 
   return <Fragment>{element}</Fragment>;
