@@ -9,7 +9,6 @@ import InstructorProvider from "./context/instructor-context/index.jsx";
 import StudentProvider from "./context/student-context/index.jsx";
 
 import { ToastContainer } from "react-toastify";
-import "./index.css";
 import "./assets/lms-theme.css";              // ← global theme tokens
 import { ThemeProvider } from "./theme/ThemeProvider.jsx"; // ← wrapper you added earlier
 
