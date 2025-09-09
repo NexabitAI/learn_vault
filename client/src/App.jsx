@@ -1,25 +1,25 @@
 import { Route, Routes } from "react-router-dom";
+import { useContext } from "react";
 
 // Auth
 import AuthPage from "./pages/auth";
-import RouteGuard from "./components/route-guard";
-import { useContext } from "react";
 import { AuthContext } from "./context/auth-context";
+import RouteGuard from "./components/route-guard";
 
-// Instructor
-import InstructorDashboardpage from "./pages/instructor";
-import AddNewCoursePage from "./pages/instructor/add-new-course";
-
-// Student – NEW public layout
+// Public (marketing/catalog)
 import StudentViewCommonLayoutNew from "./components/student-view/common-layoutnew";
 import StudentHomePageNew from "./pages/student/home/indexNew";
 import StudentViewCoursesPageNew from "./pages/student/courses/indexNew";
 import StudentViewCourseDetailsPageNew from "./pages/student/course-details/indexNew";
 
-// Student – protected areas
-import PaypalPaymentReturnPage from "./pages/student/payment-return";
+// Student protected
 import StudentCoursesPage from "./pages/student/student-courses";
 import StudentViewCourseProgressPage from "./pages/student/course-progress";
+import PaypalPaymentReturnPage from "./pages/student/payment-return";
+
+// Instructor protected
+import InstructorDashboardpage from "./pages/instructor";
+import AddNewCoursePage from "./pages/instructor/add-new-course";
 
 // Misc
 import NotFoundPage from "./pages/not-found";
@@ -29,7 +29,7 @@ function App() {
 
   return (
     <Routes>
-      {/* ---------- PUBLIC: Marketing / Catalog ---------- */}
+      {/* -------- PUBLIC: Home / Catalog -------- */}
       <Route path="/" element={<StudentViewCommonLayoutNew />}>
         <Route index element={<StudentHomePageNew />} />
         <Route path="home" element={<StudentHomePageNew />} />
@@ -37,10 +37,10 @@ function App() {
         <Route path="course/details/:id" element={<StudentViewCourseDetailsPageNew />} />
       </Route>
 
-      {/* ---------- AUTH (accessed explicitly or via modal) ---------- */}
+      {/* -------- AUTH page (also opened via modal from header) -------- */}
       <Route path="/auth" element={<AuthPage />} />
 
-      {/* ---------- STUDENT: Protected areas ---------- */}
+      {/* -------- STUDENT: Protected -------- */}
       <Route
         path="/student-courses"
         element={
@@ -61,9 +61,11 @@ function App() {
           />
         }
       />
+
+      {/* Payment return can be public; it will finalize and then redirect */}
       <Route path="/payment-return" element={<PaypalPaymentReturnPage />} />
 
-      {/* ---------- INSTRUCTOR: Protected ---------- */}
+      {/* -------- INSTRUCTOR: Protected -------- */}
       <Route
         path="/instructor"
         element={
@@ -95,7 +97,7 @@ function App() {
         }
       />
 
-      {/* ---------- Catch All ---------- */}
+      {/* Catch all */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

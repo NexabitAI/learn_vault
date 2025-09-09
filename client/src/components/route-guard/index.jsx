@@ -1,31 +1,36 @@
-// src/components/route-guard/index.jsx
-import React, { Fragment } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, Fragment } from "react";
 
 function RouteGuard({ authenticated, user, element }) {
   const location = useLocation();
-  const path = location.pathname || "/";
 
-  const isAuthPath = path.startsWith("/auth");
-  const isInstructorPath = path.startsWith("/instructor");
-  const isInstructor = user?.role === "instructor";
+  // Define what actually requires auth
+  const PROTECTED_PREFIXES = ["/student-courses", "/course-progress", "/instructor"];
+  const isProtected = PROTECTED_PREFIXES.some((p) =>
+    location.pathname.startsWith(p)
+  );
 
-  // Not logged in → force Auth, preserve where they were headed
-  if (!authenticated && !isAuthPath) {
-    return <Navigate to="/auth" replace state={{ from: location }} />;
+  // 1) If route needs auth and user is not authenticated → go to /auth
+  if (isProtected && !authenticated) {
+    return (
+      <Navigate
+        to="/auth"
+        replace
+        state={{ from: location.pathname + location.search }}
+      />
+    );
   }
 
-  // Logged in as non-instructor → block /instructor and /auth
-  if (authenticated && !isInstructor && (isInstructorPath || isAuthPath)) {
-    const to = "/home";
-    if (path !== to) return <Navigate to={to} replace />;
+  // 2) If user is not an instructor but tries instructor pages → kick to home
+  if (
+    location.pathname.startsWith("/instructor") &&
+    authenticated &&
+    user?.role !== "instructor"
+  ) {
+    return <Navigate to="/home" replace />;
   }
 
-  // Logged in as instructor → keep them under /instructor
-  if (authenticated && isInstructor && !isInstructorPath) {
-    const to = "/instructor";
-    if (path !== to) return <Navigate to={to} replace />;
-  }
+  // 3) Do NOT force instructors away from public pages.
+  //    (Remove your old "if instructor then redirect to /instructor" block.)
 
   return <Fragment>{element}</Fragment>;
 }
