@@ -6,26 +6,33 @@ const DASHBOARD_ROLES = new Set(["instructor", "admin"]);
 function RouteGuard({ authenticated, user, element }) {
   const location = useLocation();
   const role = (user?.role || "").toString().toLowerCase();
-  const onAuthPage = location.pathname.startsWith("/auth");
-  const onInstructor = location.pathname.startsWith("/instructor");
 
-  // Not logged in => force to /auth (student public pages live under /out and aren't wrapped by this guard)
-  if (!authenticated && !onAuthPage) {
+  const onAuth = location.pathname.startsWith("/auth");
+  const onInstructor = location.pathname.startsWith("/instructor");
+  const onOut = location.pathname.startsWith("/out");
+
+  // Block unauthenticated access (except /auth)
+  if (!authenticated && !onAuth) {
     return <Navigate to="/auth" replace />;
   }
 
-  // Logged in and role is dashboard-eligible (instructor/admin)
+  // If authenticated, never allow public (/out) routes
+  if (authenticated && onOut) {
+    return DASHBOARD_ROLES.has(role)
+      ? <Navigate to="/instructor" replace />
+      : <Navigate to="/home" replace />;
+  }
+
+  // Admin/Instructor: normalize them onto /instructor
   if (authenticated && DASHBOARD_ROLES.has(role)) {
-    // If they’re on /auth or any non-instructor route wrapped by this guard, send them to dashboard
-    if (onAuthPage || !onInstructor) {
+    if (onAuth || !onInstructor) {
       return <Navigate to="/instructor" replace />;
     }
   }
 
-  // Logged in but NOT dashboard-eligible (student, etc.)
+  // Students: block /instructor and /auth once logged in
   if (authenticated && !DASHBOARD_ROLES.has(role)) {
-    // Block access to instructor or lingering /auth
-    if (onInstructor || onAuthPage) {
+    if (onInstructor || onAuth) {
       return <Navigate to="/home" replace />;
     }
   }
