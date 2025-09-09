@@ -3,26 +3,35 @@ import AuthPage from "./pages/auth";
 import RouteGuard from "./components/route-guard";
 import { useContext } from "react";
 import { AuthContext } from "./context/auth-context";
+
 import InstructorDashboardpage from "./pages/instructor";
+import AddNewCoursePage from "./pages/instructor/add-new-course";
+
 import StudentViewCommonLayout from "./components/student-view/common-layout";
 import StudentHomePage from "./pages/student/home";
-import NotFoundPage from "./pages/not-found";
-import AddNewCoursePage from "./pages/instructor/add-new-course";
 import StudentViewCoursesPage from "./pages/student/courses";
 import StudentViewCourseDetailsPage from "./pages/student/course-details";
 import PaypalPaymentReturnPage from "./pages/student/payment-return";
 import StudentCoursesPage from "./pages/student/student-courses";
 import StudentViewCourseProgressPage from "./pages/student/course-progress";
+
 import StudentViewCommonLayoutNew from "./components/student-view/common-layoutnew";
 import StudentHomePageNew from "./pages/student/home/indexNew";
 import StudentViewCoursesPageNew from "./pages/student/courses/indexNew";
 import StudentViewCourseDetailsPageNew from "./pages/student/course-details/indexNew";
 
+import NotFoundPage from "./pages/not-found";
+
 function OutGate() {
   const { auth } = useContext(AuthContext);
   if (auth?.authenticate) {
     const role = (auth?.user?.role || "").toString().toLowerCase();
-    return <Navigate to={role === "admin" || role === "instructor" ? "/instructor" : "/home"} replace />;
+    return (
+      <Navigate
+        to={role === "admin" || role === "instructor" ? "/instructor" : "/home"}
+        replace
+      />
+    );
   }
   return <Outlet />;
 }
@@ -32,7 +41,7 @@ function App() {
 
   return (
     <Routes>
-      {/* ------------------ Public (unauth) site ------------------ */}
+      {/* Public site for unauthenticated visitors */}
       <Route path="/out" element={<OutGate />}>
         <Route element={<StudentViewCommonLayoutNew />}>
           <Route index element={<StudentHomePageNew />} />
@@ -42,7 +51,7 @@ function App() {
         </Route>
       </Route>
 
-      {/* ------------------ Auth ------------------ */}
+      {/* Auth page (guard allows unauth, redirects authed away) */}
       <Route
         path="/auth"
         element={
@@ -54,7 +63,7 @@ function App() {
         }
       />
 
-      {/* ------------------ Instructor (admin + instructor) ------------------ */}
+      {/* Instructor (admin + instructor) */}
       <Route
         path="/instructor"
         element={
@@ -86,7 +95,7 @@ function App() {
         }
       />
 
-      {/* ------------------ Student (authenticated) ------------------ */}
+      {/* Student (authenticated) */}
       <Route
         path="/"
         element={
@@ -106,7 +115,6 @@ function App() {
         <Route path="course-progress/:id" element={<StudentViewCourseProgressPage />} />
       </Route>
 
-      {/* ------------------ Catch All ------------------ */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
